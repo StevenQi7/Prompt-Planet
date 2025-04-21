@@ -107,7 +107,7 @@ function AdvancedSearch() {
       try {
         const [categoriesData, tagsData] = await Promise.all([
           getAllCategories(),
-          getPopularTags({ limit: 15 })
+          getPopularTags({ limit: 50 })
         ]);
         
         setCategories(categoriesData.categories);

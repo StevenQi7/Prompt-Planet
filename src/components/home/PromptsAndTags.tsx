@@ -88,7 +88,7 @@ export default function PromptsAndTags() {
   useEffect(() => {
     const fetchPopularTags = async () => {
       try {
-        const response = await fetchGet<Tag[]>('/api/tags?popular=true&limit=15');
+        const response = await fetchGet<Tag[]>('/api/tags?popular=true&limit=50');
         if (response.success && response.data) {
           setPopularTags(response.data);
         }

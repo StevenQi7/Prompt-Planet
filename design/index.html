@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt星球 - 提示词收录平台原型</title>
+    <link href="tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .prototype-item {
+            margin-bottom: 3rem;
+        }
+        .prototype-frame {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .prototype-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .prototype-title i {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 shadow-md">
+        <div class="container mx-auto">
+            <h1 class="text-3xl font-bold">Prompt星球 - 高保真原型</h1>
+            <p class="mt-2 text-indigo-100">提示词收录与管理平台</p>
+        </div>
+    </header>
+
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">
+                <i class="fas fa-home text-indigo-600"></i>
+                <h2 class="text-xl font-semibold">首页 (home.html)</h2>
+            </div>
+            <iframe src="home.html" class="prototype-frame"></iframe>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">
+                <i class="fas fa-th-large text-indigo-600"></i>
+                <h2 class="text-xl font-semibold">提示词浏览页 (browse.html)</h2>
+            </div>
+            <iframe src="browse.html" class="prototype-frame"></iframe>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">
+                <i class="fas fa-file-alt text-indigo-600"></i>
+                <h2 class="text-xl font-semibold">提示词详情页 (prompt-detail.html)</h2>
+            </div>
+            <iframe src="prompt-detail.html" class="prototype-frame"></iframe>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">
+                <i class="fas fa-user text-indigo-600"></i>
+                <h2 class="text-xl font-semibold">个人中心 (profile.html)</h2>
+            </div>
+            <iframe src="profile.html" class="prototype-frame"></iframe>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">
+                <i class="fas fa-plus-circle text-indigo-600"></i>
+                <h2 class="text-xl font-semibold">创建/编辑提示词 (create-prompt.html)</h2>
+            </div>
+            <iframe src="create-prompt.html" class="prototype-frame"></iframe>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">
+                <i class="fas fa-cog text-indigo-600"></i>
+                <h2 class="text-xl font-semibold">用户设置 (settings.html)</h2>
+            </div>
+            <iframe src="settings.html" class="prototype-frame"></iframe>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">
+                <i class="fas fa-search text-indigo-600"></i>
+                <h2 class="text-xl font-semibold">搜索结果页 (search-results.html)</h2>
+            </div>
+            <iframe src="search-results.html" class="prototype-frame"></iframe>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">
+                <i class="fas fa-clipboard-check text-indigo-600"></i>
+                <h2 class="text-xl font-semibold">管理员审核页 (admin-review.html)</h2>
+            </div>
+            <iframe src="admin-review.html" class="prototype-frame"></iframe>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white p-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>© 2023 Prompt星球 - 高保真原型展示</p>
+        </div>
+    </footer>
+</body>
+</html> 

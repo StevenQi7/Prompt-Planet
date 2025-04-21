@@ -1,0 +1,10 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="200" height="200" rx="30" fill="#ffffff"/>
+  
+  <!-- 主图形 - 使用oklch(51.1% 0.262 276.966)转换为十六进制 -->
+  <path d="M50 70C50 59.5066 58.5066 51 69 51H131C141.493 51 150 59.5066 150 70V110C150 120.493 141.493 129 131 129H100L80 149V129H69C58.5066 129 50 120.493 50 110V70Z" fill="#3949ab"/>
+  
+  <!-- 闪电图标 - 代表灵感和创意 -->
+  <path d="M100 70L85 90H100L90 115L115 90H100L110 70H100Z" fill="white" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+</svg> 

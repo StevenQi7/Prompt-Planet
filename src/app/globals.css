@@ -1,0 +1,482 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f9fafb;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a202c;
+    --foreground: #f7fafc;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background-color: #f9fafb; /* bg-gray-50 */
+}
+
+.hero-bg {
+  background-image: url('/bg-image.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.95) 0%, rgba(45, 55, 72, 0.9) 100%);
+  z-index: 0;
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1);
+}
+
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(25deg);
+  transition: all 0.8s;
+}
+
+.shine-effect:hover::after {
+  left: 100%;
+}
+
+.shine-effect-slow {
+  animation: shine 3s infinite linear;
+  background-repeat: no-repeat;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* 深色模式样式 */
+.dark {
+  --bg-primary: #1a202c;
+  --bg-secondary: #2d3748;
+  --text-primary: #f7fafc;
+  --text-secondary: #e2e8f0;
+  --border-color: #4a5568;
+}
+
+.dark body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dark .bg-white {
+  background-color: var(--bg-secondary);
+}
+
+.dark .text-gray-800 {
+  color: var(--text-primary);
+}
+
+.dark .text-gray-600, .dark .text-gray-700 {
+  color: var(--text-secondary);
+}
+
+.dark .border-gray-100, .dark .border-gray-200 {
+  border-color: var(--border-color);
+}
+
+.dark .shadow-sm, .dark .shadow-md {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* 复制按钮动画效果 */
+@keyframes popIn {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.copy-animation {
+  animation: popIn 0.3s ease-in-out;
+}
+
+/* 复制按钮波纹效果 */
+.copy-btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.copy-btn-ripple:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, rgba(255, 255, 255, 0) 70%);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.5s ease-out;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.copy-btn-ripple:hover:before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.copy-btn-ripple:active:before {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.7) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+/* 复制按钮文字闪烁效果 */
+@keyframes textGlow {
+  0%, 100% {
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+  }
+}
+
+.copy-text-glow {
+  animation: textGlow 2s infinite;
+}
+
+/* 按钮悬停上浮效果 */
+.btn-float {
+  transition: transform 0.3s ease;
+}
+
+.btn-float:hover {
+  transform: translateY(-2px);
+}
+
+.btn-float:active {
+  transform: translateY(0);
+}
+
+/* 创建提示词页面样式 */
+.hero-bg {
+  background-image: url('/bg-image.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.95) 0%, rgba(45, 55, 72, 0.9) 100%);
+  z-index: 0;
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1);
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* 表单元素文字颜色修复 */
+input, select, textarea {
+  color: #4b5563; /* text-gray-600 */
+}
+
+.dark input, .dark select, .dark textarea {
+  color: #e5e7eb; /* text-gray-200 */
+  background-color: #374151; /* bg-gray-700 */
+  border-color: #4b5563; /* border-gray-600 */
+}
+
+.dark input::placeholder, .dark textarea::placeholder {
+  color: #9ca3af; /* text-gray-400 */
+}
+
+.dark option {
+  background-color: #374151; /* bg-gray-700 */
+  color: #e5e7eb; /* text-gray-200 */
+}
+
+/* 修复下拉菜单中的选项文字颜色 */
+.dark select option {
+  background-color: #1f2937; /* bg-gray-800 */
+  color: #f9fafb; /* text-gray-50 */
+}
+
+/* Markdown编辑器深色模式样式 */
+.dark .markdown-editor .toolbar {
+  background-color: #2d3748; /* bg-gray-800 */
+  border-color: #4a5568; /* border-gray-700 */
+}
+
+.dark .markdown-editor .toolbar button {
+  background-color: #1a202c; /* bg-gray-900 */
+  border-color: #4a5568; /* border-gray-700 */
+  color: #e2e8f0; /* text-gray-200 */
+}
+
+.dark .markdown-editor .toolbar button:hover {
+  background-color: #2d3748; /* bg-gray-800 */
+  border-color: #718096; /* border-gray-500 */
+}
+
+/* 表单区域深色模式样式 */
+.dark .transition-all.duration-300.hover\:shadow-md:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.36);
+}
+
+.dark .form-section h2 .text-gray-500 {
+  color: #a0aec0; /* text-gray-400 */
+}
+
+/* 表单部分状态圆点 */
+.dark .bg-gray-400 {
+  background-color: #4a5568; /* bg-gray-700 */
+}
+
+/* 深色模式下的提示框 */
+.dark .bg-gradient-to-r.from-indigo-50.to-blue-50 {
+  background: linear-gradient(to right, rgba(66, 66, 171, 0.2), rgba(66, 84, 150, 0.2));
+  border-color: #667eea; /* border-indigo-400 */
+}
+
+.dark .text-indigo-700 {
+  color: #a5b4fc; /* text-indigo-300 */
+}
+
+.dark .text-indigo-800 {
+  color: #818cf8; /* text-indigo-400 */
+}
+
+/* 上传区域深色模式样式 */
+.dark .border-dashed {
+  border-color: #4a5568; /* border-gray-700 */
+}
+
+/* react-markdown-editor-lite深色模式样式 */
+.dark .rc-md-editor {
+  border-color: #4a5568; /* border-gray-700 */
+  background-color: #2d3748; /* bg-gray-800 */
+}
+
+.dark .rc-md-editor .rc-md-navigation {
+  background-color: #1a202c; /* bg-gray-900 */
+  border-color: #4a5568; /* border-gray-700 */
+}
+
+.dark .rc-md-editor .rc-md-navigation .button-wrap .button {
+  color: #e2e8f0; /* text-gray-200 */
+}
+
+.dark .rc-md-editor .rc-md-navigation .button-wrap .button:hover {
+  color: #ffffff;
+  background-color: #4a5568; /* bg-gray-700 */
+}
+
+.dark .rc-md-editor .editor-container .sec-md .input {
+  background-color: #2d3748; /* bg-gray-800 */
+  color: #e2e8f0; /* text-gray-200 */
+}
+
+.dark .rc-md-editor .editor-container .sec-md textarea {
+  background-color: #2d3748; /* bg-gray-800 */
+  color: #e2e8f0; /* text-gray-200 */
+}
+
+.dark .rc-md-editor .editor-container .sec-html {
+  background-color: #1a202c; /* bg-gray-900 */
+  color: #e2e8f0; /* text-gray-200 */
+}
+
+.dark .rc-md-editor .rc-md-navigation .drop-wrap {
+  background-color: #1a202c; /* bg-gray-900 */
+  border-color: #4a5568; /* border-gray-700 */
+  color: #e2e8f0; /* text-gray-200 */
+}
+
+.dark .rc-md-editor .rc-md-navigation .drop-wrap .list-item:hover {
+  background-color: #2d3748; /* bg-gray-800 */
+}
+
+/* 自定义滚动条样式 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 修复ReactMarkdown文本颜色问题 */
+.prose {
+  color: #374151; /* 默认文字颜色 text-gray-700 */
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  color: #1f2937; /* 标题颜色 text-gray-800 */
+}
+
+.prose p, .prose ul, .prose ol, .prose blockquote {
+  color: #4b5563; /* 段落颜色 text-gray-600 */
+}
+
+.prose a {
+  color: #4f46e5; /* 链接颜色 text-indigo-600 */
+}
+
+.prose code {
+  color: #111827; /* 代码颜色 text-gray-900 */
+  background-color: #f3f4f6; /* 代码背景颜色 bg-gray-100 */
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+}
+
+/* 深色模式下的Markdown文字颜色修复 */
+.dark .prose {
+  color: #e5e7eb; /* 深色模式文字颜色 text-gray-200 */
+}
+
+.dark .prose h1, .dark .prose h2, .dark .prose h3, .dark .prose h4, .dark .prose h5, .dark .prose h6 {
+  color: #f3f4f6; /* 深色模式标题颜色 text-gray-100 */
+}
+
+.dark .prose p, .dark .prose ul, .dark .prose ol, .dark .prose blockquote {
+  color: #d1d5db; /* 深色模式段落颜色 text-gray-300 */
+}
+
+.dark .prose a {
+  color: #818cf8; /* 深色模式链接颜色 text-indigo-400 */
+}
+
+.dark .prose code {
+  color: #f9fafb; /* 深色模式代码颜色 text-gray-50 */
+  background-color: #374151; /* 深色模式代码背景 bg-gray-700 */
+}
+
+/* 补充修复其他可能的文字颜色问题 */
+.bg-white, .bg-gray-50, .bg-gray-100, .bg-gray-200 {
+  color: #1f2937; /* 确保浅色背景上的文字为深色 */
+}
+
+.bg-gray-800, .bg-gray-900, .bg-indigo-800, .bg-indigo-900 {
+  color: #f9fafb; /* 确保深色背景上的文字为浅色 */
+}
+
+.dark .bg-white {
+  background-color: #1f2937; /* 深色模式下的白色背景改为深色 */
+  color: #f9fafb; /* 文字改为浅色 */
+}
+
+/* 修复浅色背景上的文字在深色模式下的颜色 */
+.dark .bg-gray-50 {
+  background-color: #111827; /* 深色模式下更暗的背景 */
+}
+
+.dark .bg-gray-100 {
+  background-color: #1f2937; /* 深色模式下更暗的背景 */
+}
+
+.dark .bg-blue-50, .dark .bg-indigo-50, .dark .bg-purple-50 {
+  background-color: rgba(30, 58, 138, 0.2); /* 深色模式下的蓝色背景调整 */
+  color: #e5e7eb; /* 深色模式下的文字颜色调整 */
+  border-color: rgba(30, 58, 138, 0.4); /* 深色模式下的边框颜色调整 */
+}
+
+/* 确保各种文本元素在深色模式下可见 */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #f3f4f6 !important; /* 强制深色模式下的标题为浅色 */
+}
+
+.dark p, .dark span:not([class*="text-"]), .dark div:not([class*="text-"]) {
+  color: #e5e7eb; /* 深色模式下的普通文本为浅色 */
+}
+
+/* 修复特定组件中可能有问题的部分 */
+.dark .font-semibold, .dark .font-bold {
+  color: #f3f4f6; /* 确保粗体文本在深色模式下清晰可见 */
+}
+
+.dark .text-gray-800, .dark .text-gray-700 {
+  color: #e5e7eb !important; /* 强制将深色文本在深色模式下改为浅色 */
+}
+
+.dark .text-gray-600, .dark .text-gray-500 {
+  color: #d1d5db !important; /* 强制将灰色文本在深色模式下改为浅灰色 */
+}

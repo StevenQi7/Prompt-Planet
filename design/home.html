@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt星球 - 提示词收录平台</title>
+    <link href="tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        .hero-bg {
+            background-image: url('bg-image.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.95) 0%, rgba(45, 55, 72, 0.9) 100%);
+            z-index: 0;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1);
+        }
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .shine-effect::after {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 50%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(25deg);
+            transition: all 0.8s;
+        }
+        .shine-effect:hover::after {
+            left: 100%;
+        }
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* 深色模式样式 */
+        .dark {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #e2e8f0;
+            --border-color: #4a5568;
+        }
+        
+        .dark body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .dark .bg-white {
+            background-color: var(--bg-secondary);
+        }
+        
+        .dark .text-gray-800 {
+            color: var(--text-primary);
+        }
+        
+        .dark .text-gray-600, .dark .text-gray-700 {
+            color: var(--text-secondary);
+        }
+        
+        .dark .border-gray-100, .dark .border-gray-200 {
+            border-color: var(--border-color);
+        }
+        
+        .dark .shadow-sm, .dark .shadow-md {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3">
+                <div class="flex items-center space-x-2">
+                    <div class="text-indigo-600 animate-pulse-slow">
+                        <i class="fas fa-robot text-2xl"></i>
+                    </div>
+                    <span class="font-bold text-xl text-gray-800">Prompt星球</span>
+                </div>
+                
+                <!-- 搜索框 -->
+                <div class="hidden md:block flex-grow max-w-lg mx-8">
+                    <form action="search-results.html" method="get">
+                        <div class="relative">
+                            <input type="text" name="q" placeholder="搜索提示词..." class="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300">
+                            <button type="submit" class="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-indigo-500 transition-colors duration-300">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- 导航链接 -->
+                <div class="flex items-center space-x-4">
+                    <a href="browse.html" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-th-large mr-1"></i>浏览
+                    </a>
+                    <a href="profile.html" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-user-edit mr-1"></i>我的提示词
+                    </a>
+                    <a href="create-prompt.html" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-magic mr-1"></i>提示词创作
+                    </a>
+                    <a href="favorites.html" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-bookmark mr-1"></i>收藏
+                    </a>
+                    
+                    <!-- 深色模式切换 -->
+                    <button id="darkModeToggle" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    
+                    <!-- 语言切换 -->
+                    <div class="relative">
+                        <button id="languageToggle" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300 flex items-center">
+                            <i class="fas fa-globe mr-1"></i>
+                            <span class="text-sm">中文</span>
+                        </button>
+                        <div id="languageMenu" class="hidden absolute right-0 mt-2 bg-white rounded-lg shadow-xl z-10 py-2 w-24 border border-gray-100">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                中文
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                English
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                日本語
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <button id="userDropdown" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300 flex items-center">
+                            <i class="fas fa-user mr-1"></i>
+                            <span class="text-sm">张三</span>
+                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 bg-white rounded-lg shadow-xl z-10 py-2 w-40 border border-gray-100">
+                            <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                <i class="fas fa-user-circle mr-2"></i>个人主页
+                            </a>
+                            <a href="settings.html" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                <i class="fas fa-cog mr-2"></i>账户设置
+                            </a>
+                            <hr class="my-1 border-gray-200">
+                            <a href="#" class="block px-4 py-2 text-red-600 hover:bg-red-50 transition duration-200">
+                                <i class="fas fa-sign-out-alt mr-2"></i>退出登录
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section class="hero-bg relative">
+        <div class="container mx-auto px-4 py-24 relative z-10">
+            <div class="max-w-2xl">
+                <div class="inline-block px-3 py-1 bg-white bg-opacity-20 backdrop-filter backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4 animate-pulse-slow">
+                    <i class="fas fa-bolt text-yellow-300 mr-1"></i> 探索AI时代的无限创意
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">发现、收藏、创建<br>激发AI潜能的<span class="relative inline-block">
+                    <span class="relative z-10">提示词</span>
+                    <span class="absolute bottom-1 left-0 w-full h-3 bg-indigo-400 bg-opacity-30 -z-10"></span>
+                </span></h1>
+                <p class="text-xl text-gray-100 mb-8 max-w-lg">探索数千种精选提示词，让AI为你的创作、工作和学习赋能，释放创造力的无限可能</p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="browse.html" class="bg-white hover:bg-gray-50 text-indigo-600 font-medium py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-md hover:shadow-lg shine-effect">
+                        <i class="fas fa-search mr-2"></i>探索提示词
+                    </a>
+                    <a href="create-prompt.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-md hover:shadow-lg shine-effect">
+                        <i class="fas fa-magic mr-2"></i>提示词创作
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent"></div>
+    </section>
+
+    <!-- 分类导航 -->
+    <section class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <span class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-2">
+                    <i class="fas fa-th-large text-indigo-600 text-sm"></i>
+                </span>
+                按分类浏览
+            </h2>
+            <div class="relative">
+                <button id="categoryDropdown" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center border border-indigo-100">
+                    全部分类 <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                </button>
+                <div id="categoryMenu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl z-10 py-2 border border-gray-100 overflow-hidden">
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-paint-brush text-indigo-500 mr-2"></i> 创意写作
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-code text-indigo-500 mr-2"></i> 代码开发
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-image text-indigo-500 mr-2"></i> 图像生成
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-graduation-cap text-indigo-500 mr-2"></i> 教育学习
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-chart-line text-indigo-500 mr-2"></i> 市场营销
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-robot text-indigo-500 mr-2"></i> AI助手
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-tasks text-indigo-500 mr-2"></i> 生产力工具
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-brain text-indigo-500 mr-2"></i> 思维方式
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-language text-indigo-500 mr-2"></i> 语言翻译
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                        <i class="fas fa-file-alt text-indigo-500 mr-2"></i> 文档处理
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- 热门分类标签 -->
+        <div class="flex flex-wrap gap-2 mb-8">
+            <a href="#" class="group bg-white border border-indigo-100 text-indigo-800 text-sm font-medium px-4 py-2 rounded-full hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-300">
+                <i class="fas fa-paint-brush text-indigo-400 group-hover:text-indigo-600 mr-1 transition-colors duration-300"></i> 创意写作
+            </a>
+            <a href="#" class="group bg-white border border-green-100 text-green-800 text-sm font-medium px-4 py-2 rounded-full hover:bg-green-50 hover:border-green-200 transition-all duration-300">
+                <i class="fas fa-code text-green-400 group-hover:text-green-600 mr-1 transition-colors duration-300"></i> 代码开发
+            </a>
+            <a href="#" class="group bg-white border border-purple-100 text-purple-800 text-sm font-medium px-4 py-2 rounded-full hover:bg-purple-50 hover:border-purple-200 transition-all duration-300">
+                <i class="fas fa-image text-purple-400 group-hover:text-purple-600 mr-1 transition-colors duration-300"></i> 图像生成
+            </a>
+            <a href="#" class="group bg-white border border-yellow-100 text-yellow-800 text-sm font-medium px-4 py-2 rounded-full hover:bg-yellow-50 hover:border-yellow-200 transition-all duration-300">
+                <i class="fas fa-graduation-cap text-yellow-400 group-hover:text-yellow-600 mr-1 transition-colors duration-300"></i> 教育学习
+            </a>
+            <a href="#" class="group bg-white border border-red-100 text-red-800 text-sm font-medium px-4 py-2 rounded-full hover:bg-red-50 hover:border-red-200 transition-all duration-300">
+                <i class="fas fa-chart-line text-red-400 group-hover:text-red-600 mr-1 transition-colors duration-300"></i> 市场营销
+            </a>
+            <a href="#" class="group bg-white border border-blue-100 text-blue-800 text-sm font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:border-blue-200 transition-all duration-300">
+                <i class="fas fa-robot text-blue-400 group-hover:text-blue-600 mr-1 transition-colors duration-300"></i> AI助手
+            </a>
+        </div>
+    </section>
+
+    <!-- 热门提示词与标签 -->
+    <section class="container mx-auto px-4 py-8 my-4">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <span class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-2">
+                    <i class="fas fa-fire text-red-600 text-sm"></i>
+                </span>
+                提示词精选
+            </h2>
+            <a href="browse.html" class="text-indigo-600 hover:text-indigo-800 font-medium group transition-all duration-300 flex items-center">
+                查看全部 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+            </a>
+        </div>
+        
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- 左侧：热门标签 -->
+            <div class="w-full lg:w-3/12">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-tags text-indigo-500 mr-2"></i>
+                    热门标签
+                </h3>
+                <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+                    <div class="flex flex-wrap gap-2">
+                        <a href="#" class="bg-indigo-50 text-indigo-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors duration-300">
+                            创意写作 <span class="text-indigo-500 text-xs ml-1">1.2k+</span>
+                        </a>
+                        <a href="#" class="bg-blue-50 text-blue-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors duration-300">
+                            数据分析 <span class="text-blue-500 text-xs ml-1">950+</span>
+                        </a>
+                        <a href="#" class="bg-green-50 text-green-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors duration-300">
+                            编程 <span class="text-green-500 text-xs ml-1">895+</span>
+                        </a>
+                        <a href="#" class="bg-purple-50 text-purple-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-purple-100 transition-colors duration-300">
+                            图像生成 <span class="text-purple-500 text-xs ml-1">820+</span>
+                        </a>
+                        <a href="#" class="bg-yellow-50 text-yellow-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-yellow-100 transition-colors duration-300">
+                            创意构思 <span class="text-yellow-500 text-xs ml-1">780+</span>
+                        </a>
+                        <a href="#" class="bg-red-50 text-red-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors duration-300">
+                            商业规划 <span class="text-red-500 text-xs ml-1">720+</span>
+                        </a>
+                        <a href="#" class="bg-teal-50 text-teal-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-teal-100 transition-colors duration-300">
+                            学习计划 <span class="text-teal-500 text-xs ml-1">690+</span>
+                        </a>
+                        <a href="#" class="bg-orange-50 text-orange-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-orange-100 transition-colors duration-300">
+                            角色扮演 <span class="text-orange-500 text-xs ml-1">650+</span>
+                        </a>
+                        <a href="#" class="bg-pink-50 text-pink-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-pink-100 transition-colors duration-300">
+                            多模态 <span class="text-pink-500 text-xs ml-1">620+</span>
+                        </a>
+                        <a href="#" class="bg-cyan-50 text-cyan-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-cyan-100 transition-colors duration-300">
+                            AI绘画 <span class="text-cyan-500 text-xs ml-1">605+</span>
+                        </a>
+                        <a href="#" class="bg-gray-50 text-gray-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-300">
+                            技术文档 <span class="text-gray-500 text-xs ml-1">580+</span>
+                        </a>
+                        <a href="#" class="bg-indigo-50 text-indigo-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors duration-300">
+                            思维模型 <span class="text-indigo-500 text-xs ml-1">560+</span>
+                        </a>
+                        <a href="#" class="bg-blue-50 text-blue-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors duration-300">
+                            SEO优化 <span class="text-blue-500 text-xs ml-1">540+</span>
+                        </a>
+                        <a href="#" class="bg-green-50 text-green-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors duration-300">
+                            内容营销 <span class="text-green-500 text-xs ml-1">520+</span>
+                        </a>
+                        <a href="#" class="bg-purple-50 text-purple-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-purple-100 transition-colors duration-300">
+                            用户体验 <span class="text-purple-500 text-xs ml-1">510+</span>
+                        </a>
+                        <a href="#" class="bg-yellow-50 text-yellow-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-yellow-100 transition-colors duration-300">
+                            演讲稿 <span class="text-yellow-500 text-xs ml-1">495+</span>
+                        </a>
+                        <a href="#" class="bg-red-50 text-red-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors duration-300">
+                            产品经理 <span class="text-red-500 text-xs ml-1">480+</span>
+                        </a>
+                        <a href="#" class="bg-teal-50 text-teal-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-teal-100 transition-colors duration-300">
+                            数据可视化 <span class="text-teal-500 text-xs ml-1">470+</span>
+                        </a>
+                        <a href="#" class="bg-orange-50 text-orange-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-orange-100 transition-colors duration-300">
+                            简历优化 <span class="text-orange-500 text-xs ml-1">465+</span>
+                        </a>
+                        <a href="#" class="bg-pink-50 text-pink-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-pink-100 transition-colors duration-300">
+                            心理咨询 <span class="text-pink-500 text-xs ml-1">450+</span>
+                        </a>
+                        <a href="#" class="bg-cyan-50 text-cyan-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-cyan-100 transition-colors duration-300">
+                            小说创作 <span class="text-cyan-500 text-xs ml-1">445+</span>
+                        </a>
+                        <a href="#" class="bg-gray-50 text-gray-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-300">
+                            财务分析 <span class="text-gray-500 text-xs ml-1">430+</span>
+                        </a>
+                        <a href="#" class="bg-indigo-50 text-indigo-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors duration-300">
+                            学术写作 <span class="text-indigo-500 text-xs ml-1">425+</span>
+                        </a>
+                        <a href="#" class="bg-blue-50 text-blue-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors duration-300">
+                            周报生成 <span class="text-blue-500 text-xs ml-1">410+</span>
+                        </a>
+                        <a href="#" class="bg-green-50 text-green-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors duration-300">
+                            旅行规划 <span class="text-green-500 text-xs ml-1">405+</span>
+                        </a>
+                        <a href="#" class="bg-purple-50 text-purple-700 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-purple-100 transition-colors duration-300">
+                            健康饮食 <span class="text-purple-500 text-xs ml-1">395+</span>
+                        </a>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium text-sm inline-flex items-center">
+                            更多标签 <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：提示词卡片 -->
+            <div class="w-full lg:w-9/12">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-wand-magic-sparkles text-indigo-500 mr-2"></i>
+                        提示词列表
+                    </h3>
+                    <div class="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
+                        <button id="hotPrompts" class="bg-white shadow-sm px-3 py-1 rounded-md text-indigo-600 text-sm font-medium transition-all duration-300">
+                            热门
+                        </button>
+                        <button id="newPrompts" class="px-3 py-1 rounded-md text-gray-600 text-sm font-medium hover:bg-gray-50 transition-all duration-300">
+                            最新
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 热门提示词卡片 -->
+                <div id="hotPromptsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- 提示词卡片 1 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-file-alt text-blue-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">创意写作</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    <span>12,543</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">专业文章写作助手</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为一位专业写作助手，请根据[主题]创作一篇详尽的文章，包含引言、论点展开和结论...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 2 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-code text-green-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">代码开发</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    <span>9,318</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">React组件优化专家</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为一位React性能优化专家，请分析以下组件代码并提供优化建议，关注重渲染问题和性能瓶颈...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 3 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-image text-purple-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-purple-100 text-purple-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">图像生成</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    <span>8,234</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">精美风景图生成</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">创建一张超高清[风景类型]风景图，包含[地形特征]，[时间]的自然光线，[天气状况]，8K分辨率，真实细节...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 4 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-graduation-cap text-yellow-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">教育学习</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    <span>7,123</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">学习计划定制专家</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为学习规划专家，请根据我的[学习目标]、[可用时间]和[当前水平]，制定一个为期[时间]的详细学习计划...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 5 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-red-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-red-100 text-red-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">市场营销</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    <span>6,012</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">品牌故事构建专家</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为品牌故事专家，请帮我为[产品/服务]创建一个引人入胜的品牌故事，突出其[核心价值]和[独特卖点]...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 6 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-robot text-cyan-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-cyan-100 text-cyan-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">AI助手</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    <span>5,901</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">全能学术助手</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为一位学术研究助手，我希望你能帮助我完成关于[研究主题]的论文。请提供相关文献推荐、研究方法建议...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 7 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-tasks text-indigo-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-indigo-100 text-indigo-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">生产力工具</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    <span>4,790</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">会议纪要生成工具</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">请根据以下会议记录，生成一份专业的会议纪要，包括主要讨论点、决策事项、行动计划和后续跟进事项...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 8 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-paint-brush text-pink-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-pink-100 text-pink-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">创意设计</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    <span>3,679</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">Logo创意生成器</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为专业logo设计师，请为[品牌名称]设计一个标志性的logo。品牌属于[行业]，目标受众是[受众群体]...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 最新提示词卡片 -->
+                <div id="newPromptsContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- 提示词卡片 1 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-red-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-red-100 text-red-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">市场营销</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <span class="text-gray-400">2小时前</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">社交媒体营销策略生成器</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为社交媒体营销专家，请为[品牌/产品]制定30天的社交媒体营销计划，包括内容主题、发布时间表...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 2 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-graduation-cap text-yellow-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">教育学习</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <span class="text-gray-400">5小时前</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">学科知识导师</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为[学科]专业教师，请为初学者讲解[概念]，使用浅显易懂的语言，举实际例子，并提供5个练习题...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 3 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-code text-green-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">代码开发</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <span class="text-gray-400">8小时前</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">全栈开发解决方案</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为全栈开发专家，请为我设计一个[功能描述]的Web应用架构，包括前端、后端技术选择和数据库设计...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 4 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-image text-purple-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-purple-100 text-purple-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">图像生成</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <span class="text-gray-400">12小时前</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">科幻场景构建器</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">生成一个详细的科幻[场景类型]场景，包含未来科技元素，[特定风格]艺术风格，精细的机械和建筑细节...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 5 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-brain text-blue-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">思维方式</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <span class="text-gray-400">1天前</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">逆向思维训练师</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为逆向思维教练，请帮我分析[问题/情境]，提供至少5种反向思考的新视角，打破常规思维模式...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 6 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-heart text-pink-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-pink-100 text-pink-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">情感表达</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <span class="text-gray-400">1天前</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">个人情感信件助手</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为情感表达专家，请帮我写一封给[收信人]的[信件类型]信，表达我的[情感/想法]，语言真挚动人...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 7 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-utensils text-teal-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-teal-100 text-teal-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">生活助手</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <span class="text-gray-400">2天前</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">健康食谱规划师</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为营养师，请根据我的[饮食需求]、[健康目标]和[喜好/限制]，制定一份为期[天数]的健康餐饮计划...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词卡片 8 -->
+                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-language text-orange-600 text-xs"></i>
+                                    </div>
+                                    <span class="bg-orange-100 text-orange-800 text-xs font-medium ml-2 px-2 py-0.5 rounded">语言翻译</span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <span class="text-gray-400">2天前</span>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-800 mb-2">本地化翻译专家</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">作为语言本地化专家，请将以下[内容类型]从[源语言]翻译成[目标语言]，保留原意的同时适应目标文化...</p>
+                            <div class="flex justify-between items-center">
+                                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center shine-effect">
+                                    <i class="far fa-copy mr-1"></i> 复制
+                                </button>
+                                <a href="prompt-detail.html" class="text-gray-500 hover:text-gray-700 text-sm group flex items-center">
+                                    详情 <i class="fas fa-chevron-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 加载更多按钮 -->
+                <div class="mt-8 text-center">
+                    <button id="loadMoreBtn" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-8 rounded-lg transition shadow-md hover:shadow-lg">
+                        加载更多提示词
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-robot text-indigo-400 text-2xl"></i>
+                        <span class="font-bold text-xl">Prompt星球</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">探索、收藏和分享AI提示词的最佳平台</p>
+                </div>
+                <div>
+                    <h4 class="font-medium text-lg mb-4">快速链接</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-indigo-400">首页</a></li>
+                        <li><a href="#" class="hover:text-indigo-400">浏览提示词</a></li>
+                        <li><a href="#" class="hover:text-indigo-400">创建提示词</a></li>
+                        <li><a href="#" class="hover:text-indigo-400">帮助中心</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium text-lg mb-4">关于我们</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-indigo-400">关于Prompt星球</a></li>
+                        <li><a href="#" class="hover:text-indigo-400">联系我们</a></li>
+                        <li><a href="#" class="hover:text-indigo-400">使用条款</a></li>
+                        <li><a href="#" class="hover:text-indigo-400">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium text-lg mb-4">关注我们</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-indigo-400">
+                            <i class="fab fa-weixin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-400">
+                            <i class="fab fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-400">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-400">
+                            <i class="fab fa-zhihu text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-sm">
+                <p>© 2023 Prompt星球 - 提示词收录与管理平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 添加下拉菜单的脚本 -->
+    <script>
+        // 类别下拉菜单
+        document.getElementById('categoryDropdown').addEventListener('click', function(event) {
+            event.stopPropagation();
+            document.getElementById('categoryMenu').classList.toggle('hidden');
+        });
+        
+        // 语言切换功能
+        document.getElementById('languageToggle').addEventListener('click', function(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('languageMenu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // 用户下拉菜单
+        document.getElementById('userDropdown').addEventListener('click', function(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', function(event) {
+            const categoryDropdown = document.getElementById('categoryDropdown');
+            const categoryMenu = document.getElementById('categoryMenu');
+            const languageToggle = document.getElementById('languageToggle');
+            const languageMenu = document.getElementById('languageMenu');
+            const userDropdown = document.getElementById('userDropdown');
+            const userMenu = document.getElementById('userMenu');
+            
+            if (categoryDropdown && categoryMenu) {
+                if (!categoryDropdown.contains(event.target) && !categoryMenu.contains(event.target)) {
+                    categoryMenu.classList.add('hidden');
+                }
+            }
+            
+            if (languageToggle && languageMenu) {
+                if (!languageToggle.contains(event.target) && !languageMenu.contains(event.target)) {
+                    languageMenu.classList.add('hidden');
+                }
+            }
+            
+            if (userDropdown && userMenu) {
+                if (!userDropdown.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.add('hidden');
+                }
+            }
+        });
+        
+        // 深色模式切换功能
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const htmlEl = document.documentElement;
+        
+        // 检查本地存储中的深色模式设置
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            htmlEl.classList.add('dark');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        darkModeToggle.addEventListener('click', function() {
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                localStorage.setItem('darkMode', 'disabled');
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                htmlEl.classList.add('dark');
+                localStorage.setItem('darkMode', 'enabled');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        });
+        
+        // 检查系统偏好设置
+        const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+        if (prefersDarkMode.matches && localStorage.getItem('darkMode') === null) {
+            htmlEl.classList.add('dark');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        // 监听系统偏好设置变化
+        prefersDarkMode.addEventListener('change', function(e) {
+            if (localStorage.getItem('darkMode') === null) {
+                if (e.matches) {
+                    htmlEl.classList.add('dark');
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    htmlEl.classList.remove('dark');
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            }
+        });
+        
+        // 提示词列表切换功能
+        const hotPromptsBtn = document.getElementById('hotPrompts');
+        const newPromptsBtn = document.getElementById('newPrompts');
+        const hotPromptsContainer = document.getElementById('hotPromptsContainer');
+        const newPromptsContainer = document.getElementById('newPromptsContainer');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        
+        // 切换到热门提示词
+        hotPromptsBtn.addEventListener('click', function() {
+            // 更新按钮样式
+            hotPromptsBtn.classList.add('bg-white', 'shadow-sm', 'text-indigo-600');
+            hotPromptsBtn.classList.remove('text-gray-600', 'hover:bg-gray-50');
+            
+            newPromptsBtn.classList.remove('bg-white', 'shadow-sm', 'text-indigo-600');
+            newPromptsBtn.classList.add('text-gray-600', 'hover:bg-gray-50');
+            
+            // 显示热门内容，隐藏最新内容
+            hotPromptsContainer.classList.remove('hidden');
+            newPromptsContainer.classList.add('hidden');
+            
+            // 更新当前活跃类型
+            loadMoreBtn.dataset.type = 'hot';
+        });
+        
+        // 切换到最新提示词
+        newPromptsBtn.addEventListener('click', function() {
+            // 更新按钮样式
+            newPromptsBtn.classList.add('bg-white', 'shadow-sm', 'text-indigo-600');
+            newPromptsBtn.classList.remove('text-gray-600', 'hover:bg-gray-50');
+            
+            hotPromptsBtn.classList.remove('bg-white', 'shadow-sm', 'text-indigo-600');
+            hotPromptsBtn.classList.add('text-gray-600', 'hover:bg-gray-50');
+            
+            // 显示最新内容，隐藏热门内容
+            newPromptsContainer.classList.remove('hidden');
+            hotPromptsContainer.classList.add('hidden');
+            
+            // 更新当前活跃类型
+            loadMoreBtn.dataset.type = 'new';
+            
+            // 如果最新提示词容器中的卡片数量不足32个，自动触发加载更多
+            if (newPromptsContainer.querySelectorAll('.card-hover').length < 32) {
+                setTimeout(function() {
+                    loadMoreBtn.click();
+                }, 100);
+            }
+        });
+        
+        // 加载更多提示词功能
+        let currentPage = 1;
+        loadMoreBtn.dataset.type = 'hot'; // 默认加载热门提示词
+        
+        loadMoreBtn.addEventListener('click', function() {
+            // 模拟加载中状态
+            loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 加载中...';
+            loadMoreBtn.disabled = true;
+            
+            // 模拟网络请求延迟
+            setTimeout(function() {
+                // 确定要添加提示词的容器
+                const container = loadMoreBtn.dataset.type === 'hot' 
+                    ? hotPromptsContainer 
+                    : newPromptsContainer;
+                
+                // 模拟加载更多提示词（这里只是复制现有的卡片）
+                const existingCards = container.querySelectorAll('.card-hover');
+                const fragment = document.createDocumentFragment();
+                
+                // 每次加载32个卡片
+                const cardsPerLoad = 32;
+                
+                // 复制现有卡片来模拟新内容
+                for (let i = 0; i < cardsPerLoad; i++) {
+                    // 从现有卡片中循环取样本
+                    const sourceCard = existingCards[i % existingCards.length];
+                    const newCard = sourceCard.cloneNode(true);
+                    
+                    // 稍微修改一下内容，让它看起来像不同的卡片
+                    const titleEl = newCard.querySelector('h3');
+                    if (titleEl) {
+                        titleEl.textContent = titleEl.textContent + ' ' + (currentPage + 1) + '-' + (i + 1);
+                    }
+                    
+                    // 修改浏览量数字，使其看起来不同
+                    const viewsEl = newCard.querySelector('.fa-eye + span');
+                    if (viewsEl) {
+                        const currentViews = parseInt(viewsEl.textContent.replace(/,/g, ''));
+                        viewsEl.textContent = Math.max(100, currentViews - (currentPage * 1000 + i * 100)).toLocaleString();
+                    }
+                    
+                    fragment.appendChild(newCard);
+                }
+                
+                // 添加新卡片到容器
+                container.appendChild(fragment);
+                
+                // 恢复按钮状态
+                loadMoreBtn.innerHTML = '加载更多提示词';
+                loadMoreBtn.disabled = false;
+                
+                // 增加页码
+                currentPage++;
+                
+                // 如果页码达到某个值，可以隐藏加载更多按钮
+                if (currentPage >= 3) {
+                    loadMoreBtn.innerHTML = '已加载全部内容';
+                    loadMoreBtn.disabled = true;
+                }
+            }, 800); // 模拟加载延迟
+        });
+        
+        // 页面加载完成后，自动触发一次加载更多操作，确保默认显示32个提示词
+        document.addEventListener('DOMContentLoaded', function() {
+            // 模拟点击一次加载更多按钮，让首页默认显示32个提示词
+            if (hotPromptsContainer.querySelectorAll('.card-hover').length < 32) {
+                setTimeout(function() {
+                    loadMoreBtn.click();
+                }, 100); // 短暂延迟以确保页面完全加载
+            }
+            
+            // 搜索框回车搜索功能
+            const searchInput = document.querySelector('input[name="q"]');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const searchForm = this.closest('form');
+                        if (searchForm) {
+                            searchForm.submit();
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

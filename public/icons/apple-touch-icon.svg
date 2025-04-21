@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <!-- 背景矩形 -->
+  <rect width="180" height="180" rx="40" fill="#4F46E5" />
+  
+  <!-- 对话框图标 -->
+  <path d="M125 55H55c-5 0-9 4-9 9v45c0 5 4 9 9 9h9v18l27-18h34c5 0 9-4 9-9V64c0-5-4-9-9-9z" fill="white"/>
+  
+  <!-- 提示词符号 -->
+  <rect x="65" y="75" width="50" height="4" rx="2" fill="#4F46E5"/>
+  <rect x="65" y="85" width="35" height="4" rx="2" fill="#4F46E5"/>
+  <rect x="65" y="95" width="45" height="4" rx="2" fill="#4F46E5"/>
+</svg> 

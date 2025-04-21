@@ -1,0 +1,22 @@
+{
+  "name": "Prompt星球",
+  "short_name": "Prompt星球",
+  "description": "分享、探索和管理AI提示词的平台",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#4F46E5",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icons/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+} 

@@ -1,0 +1,7 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 主图形 - 对话气泡 -->
+  <path d="M10 30C10 22.268 16.268 16 24 16H76C83.732 16 90 22.268 90 30V60C90 67.732 83.732 74 76 74H50L35 89V74H24C16.268 74 10 67.732 10 60V30Z" fill="#3949ab"/>
+  
+  <!-- 闪电图标 -->
+  <path d="M50 30L40 45H50L42 65L65 45H50L60 30H50Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+</svg> 

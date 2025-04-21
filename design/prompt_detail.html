@@ -1,0 +1,63 @@
+    <!-- 添加下拉菜单的脚本 -->
+    <script>
+        // 语言切换功能
+        document.getElementById('languageToggle').addEventListener('click', function(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('languageMenu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // 点击语言菜单外部关闭语言下拉菜单
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('languageToggle');
+            const menu = document.getElementById('languageMenu');
+            
+            if (!dropdown.contains(event.target) && !menu.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+        
+        // 深色模式切换功能
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const htmlEl = document.documentElement;
+        
+        // 检查本地存储中的深色模式设置
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            htmlEl.classList.add('dark');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        darkModeToggle.addEventListener('click', function() {
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                localStorage.setItem('darkMode', 'disabled');
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                htmlEl.classList.add('dark');
+                localStorage.setItem('darkMode', 'enabled');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        });
+        
+        // 检查系统偏好设置
+        const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+        if (prefersDarkMode.matches && localStorage.getItem('darkMode') === null) {
+            htmlEl.classList.add('dark');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        // 监听系统偏好设置变化
+        prefersDarkMode.addEventListener('change', function(e) {
+            if (localStorage.getItem('darkMode') === null) {
+                if (e.matches) {
+                    htmlEl.classList.add('dark');
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    htmlEl.classList.remove('dark');
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

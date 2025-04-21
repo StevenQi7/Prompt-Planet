@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建提示词 - Prompt星球</title>
+    <link href="tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        .hero-bg {
+            background-image: url('bg-image.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.95) 0%, rgba(45, 55, 72, 0.9) 100%);
+            z-index: 0;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1);
+        }
+        
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shine-effect::after {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 50%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(25deg);
+            transition: all 0.8s;
+        }
+        
+        .shine-effect:hover::after {
+            left: 100%;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .form-section {
+            transition: all 0.3s ease;
+        }
+        
+        .form-section-collapsed {
+            max-height: 72px;
+            overflow: hidden;
+        }
+        
+        .form-section-expanded {
+            max-height: 2000px;
+        }
+        
+        .form-step-nav {
+            position: sticky;
+            top: 80px;
+            z-index: 10;
+        }
+        
+        .markdown-editor .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+        
+        .markdown-editor .toolbar button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            border-radius: 0.25rem;
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            transition: all 0.2s;
+        }
+        
+        .markdown-editor .toolbar button:hover {
+            background-color: #f3f4f6;
+            border-color: #d1d5db;
+        }
+        
+        .markdown-editor .toolbar button i {
+            margin-right: 0.25rem;
+        }
+        
+        .markdown-editor .editor {
+            width: 100%;
+            height: 400px;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+            resize: vertical;
+            outline: none;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .markdown-editor .preview {
+            flex: 1;
+            height: 400px;
+            padding: 1rem;
+            border-left: 1px solid #e5e7eb;
+            overflow-y: auto;
+        }
+        
+        .markdown-editor .preview h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-editor .preview h2 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-editor .preview h3 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-editor .preview p {
+            margin-bottom: 0.75rem;
+        }
+        
+        .markdown-editor .preview ul, 
+        .markdown-editor .preview ol {
+            margin-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .markdown-editor .preview li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .markdown-editor .preview code {
+            background-color: #f3f4f6;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .markdown-editor .preview pre {
+            background-color: #f3f4f6;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            overflow-x: auto;
+        }
+        
+        .markdown-editor .preview pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        
+        .markdown-editor .preview blockquote {
+            border-left: 4px solid #e5e7eb;
+            padding-left: 1rem;
+            margin-left: 0;
+            margin-bottom: 0.75rem;
+            color: #6b7280;
+        }
+        
+        /* 深色模式样式 */
+        .dark {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #e2e8f0;
+            --border-color: #4a5568;
+        }
+        
+        .dark body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .dark .bg-white {
+            background-color: var(--bg-secondary);
+        }
+        
+        .dark .text-gray-800 {
+            color: var(--text-primary);
+        }
+        
+        .dark .text-gray-600, .dark .text-gray-700 {
+            color: var(--text-secondary);
+        }
+        
+        .dark .border-gray-100, .dark .border-gray-200 {
+            border-color: var(--border-color);
+        }
+        
+        .dark .shadow-sm, .dark .shadow-md {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3">
+                <div class="flex items-center space-x-2">
+                    <div class="text-indigo-600 animate-pulse-slow">
+                        <i class="fas fa-robot text-2xl"></i>
+                    </div>
+                    <span class="font-bold text-xl text-gray-800">Prompt星球</span>
+                </div>
+                
+                <!-- 搜索框 -->
+                <div class="hidden md:block flex-grow max-w-lg mx-8">
+                    <form action="search-results.html" method="get">
+                        <div class="relative">
+                            <input type="text" name="q" placeholder="搜索提示词..." class="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300">
+                            <button type="submit" class="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-indigo-500 transition-colors duration-300">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- 导航链接 -->
+                <div class="flex items-center space-x-4">
+                    <a href="browse.html" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-th-large mr-1"></i>浏览
+                    </a>
+                    <a href="profile.html" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-user-edit mr-1"></i>我的提示词
+                    </a>
+                    <a href="create-prompt.html" class="text-indigo-600 font-medium transition-colors duration-300">
+                        <i class="fas fa-magic mr-1"></i>提示词创作
+                    </a>
+                    <a href="favorites.html" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-bookmark mr-1"></i>收藏
+                    </a>
+                    
+                    <!-- 深色模式切换 -->
+                    <button id="darkModeToggle" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    
+                    <!-- 语言切换 -->
+                    <div class="relative">
+                        <button id="languageToggle" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300 flex items-center">
+                            <i class="fas fa-globe mr-1"></i>
+                            <span class="text-sm">中文</span>
+                        </button>
+                        <div id="languageMenu" class="hidden absolute right-0 mt-2 bg-white rounded-lg shadow-xl z-10 py-2 w-24 border border-gray-100">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                中文
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                English
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                日本語
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <button id="userDropdown" class="text-gray-600 hover:text-indigo-600 transition-colors duration-300 flex items-center">
+                            <i class="fas fa-user mr-1"></i>
+                            <span class="text-sm">张三</span>
+                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 bg-white rounded-lg shadow-xl z-10 py-2 w-40 border border-gray-100">
+                            <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                <i class="fas fa-user-circle mr-2"></i>个人主页
+                            </a>
+                            <a href="settings.html" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                                <i class="fas fa-cog mr-2"></i>账户设置
+                            </a>
+                            <hr class="my-1 border-gray-200">
+                            <a href="#" class="block px-4 py-2 text-red-600 hover:bg-red-50 transition duration-200">
+                                <i class="fas fa-sign-out-alt mr-2"></i>退出登录
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主页面标题横幅 -->
+    <div class="hero-bg relative mb-8">
+        <div class="container mx-auto px-4 py-12 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <div class="inline-block px-3 py-1 bg-white bg-opacity-20 backdrop-filter backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4 animate-pulse-slow">
+                    <i class="fas fa-lightbulb text-yellow-300 mr-1"></i> 分享你的创意提示词
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">创建优质提示词</h1>
+                <p class="text-xl text-gray-100 mb-6">一个好的提示词可以激发AI创造力，帮助他人更高效地使用AI</p>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent"></div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="max-w-4xl mx-auto">
+            <!-- 表单分步导航 -->
+            <div class="mb-6 bg-white rounded-xl shadow-sm p-4 form-step-nav">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-800">创建提示词</h2>
+                    <div class="flex space-x-4">
+                        <button type="button" class="px-4 py-2 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-300" id="expandAllBtn">
+                            <i class="fas fa-expand-alt mr-1"></i> 展开全部
+                        </button>
+                        <button type="button" class="px-4 py-2 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-300" id="collapseAllBtn">
+                            <i class="fas fa-compress-alt mr-1"></i> 收起全部
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-4 flex space-x-2">
+                    <button type="button" class="step-btn flex-1 py-2 px-4 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium active" data-step="1">
+                        <i class="fas fa-info-circle mr-1"></i> 基本信息
+                    </button>
+                    <button type="button" class="step-btn flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium" data-step="2">
+                        <i class="fas fa-edit mr-1"></i> 提示词内容
+                    </button>
+                    <button type="button" class="step-btn flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium" data-step="3">
+                        <i class="fas fa-book-reader mr-1"></i> 使用说明
+                    </button>
+                    <button type="button" class="step-btn flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium" data-step="4">
+                        <i class="fas fa-image mr-1"></i> 效果展示
+                    </button>
+                    <button type="button" class="step-btn flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium" data-step="5">
+                        <i class="fas fa-cog mr-1"></i> 发布设置
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mb-8 bg-white rounded-2xl shadow-md p-6 card-hover">
+                <form id="promptForm">
+                    <!-- 基本信息 -->
+                    <div id="step1" class="mb-8 form-section form-section-expanded">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center cursor-pointer toggle-section" data-target="step1">
+                            <span class="flex items-center justify-center w-10 h-10 bg-indigo-600 text-white rounded-full mr-3 shadow-md">
+                                <span>1</span>
+                            </span>
+                            基本信息
+                            <span class="ml-2 text-sm font-normal text-gray-500">设置提示词的基本属性</span>
+                            <i class="fas fa-chevron-up ml-auto text-gray-400 section-icon"></i>
+                        </h2>
+                        
+                        <div class="space-y-3 pl-10 section-content">
+                            <div class="transition-all duration-300 hover:shadow-md p-3 rounded-lg">
+                                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">提示词标题 <span class="text-red-500">*</span></label>
+                                <input type="text" id="title" name="title" placeholder="输入一个简洁明了的标题（最多50字符）" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300">
+                                <div class="mt-1 text-xs text-gray-500">一个好的标题能够更好地吸引用户的注意力</div>
+                            </div>
+                            
+                            <div class="transition-all duration-300 hover:shadow-md p-3 rounded-lg">
+                                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">分类 <span class="text-red-500">*</span></label>
+                                <select id="category" name="category" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300">
+                                    <option value="">选择分类</option>
+                                    <option value="creative_writing">创意写作</option>
+                                    <option value="coding">代码开发</option>
+                                    <option value="image_generation">图像生成</option>
+                                    <option value="education">教育学习</option>
+                                    <option value="marketing">市场营销</option>
+                                    <option value="ai_assistant">AI助手</option>
+                                    <option value="productivity">生产力工具</option>
+                                </select>
+                            </div>
+                            
+                            <div class="transition-all duration-300 hover:shadow-md p-3 rounded-lg">
+                                <label for="tags" class="block text-sm font-medium text-gray-700 mb-1">标签</label>
+                                <input type="text" id="tags" name="tags" placeholder="输入标签，用逗号分隔（最多5个标签）" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300">
+                                <div class="mt-1 text-xs text-gray-500">标签有助于其他用户更快地找到您的提示词</div>
+                            </div>
+                            
+                            <div class="transition-all duration-300 hover:shadow-md p-3 rounded-lg">
+                                <label for="language" class="block text-sm font-medium text-gray-700 mb-1">语言 <span class="text-red-500">*</span></label>
+                                <select id="language" name="language" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300">
+                                    <option value="zh">中文</option>
+                                    <option value="en">英文</option>
+                                    <option value="jp">日文</option>
+                                    <option value="kr">韩文</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词内容 -->
+                    <div id="step2" class="mb-8 form-section form-section-collapsed">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center cursor-pointer toggle-section" data-target="step2">
+                            <span class="flex items-center justify-center w-10 h-10 bg-gray-400 text-white rounded-full mr-3 shadow-md section-number">
+                                <span>2</span>
+                            </span>
+                            提示词内容
+                            <span class="ml-2 text-sm font-normal text-gray-500">编写高质量的提示词内容</span>
+                            <i class="fas fa-chevron-down ml-auto text-gray-400 section-icon"></i>
+                        </h2>
+                        
+                        <div class="space-y-3 pl-10 section-content hidden">
+                            <div class="transition-all duration-300 hover:shadow-md p-3 rounded-lg">
+                                <label for="prompt_content" class="block text-sm font-medium text-gray-700 mb-2">提示词内容 <span class="text-red-500">*</span></label>
+                                
+                                <div class="markdown-editor">
+                                    <div class="toolbar">
+                                        <button type="button" data-command="bold"><i class="fas fa-bold"></i> 粗体</button>
+                                        <button type="button" data-command="italic"><i class="fas fa-italic"></i> 斜体</button>
+                                        <button type="button" data-command="heading"><i class="fas fa-heading"></i> 标题</button>
+                                        <button type="button" data-command="list-ul"><i class="fas fa-list-ul"></i> 无序列表</button>
+                                        <button type="button" data-command="list-ol"><i class="fas fa-list-ol"></i> 有序列表</button>
+                                        <button type="button" data-command="link"><i class="fas fa-link"></i> 链接</button>
+                                        <button type="button" data-command="code"><i class="fas fa-code"></i> 代码</button>
+                                        <button type="button" data-command="quote"><i class="fas fa-quote-right"></i> 引用</button>
+                                        <button type="button" data-command="image"><i class="fas fa-image"></i> 图片</button>
+                                        <button type="button" data-command="help" class="ml-auto"><i class="fas fa-question-circle"></i> Markdown帮助</button>
+                                    </div>
+                                    <textarea id="prompt_content" name="prompt_content" class="editor" placeholder="输入提示词内容，支持Markdown格式..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border-l-4 border-indigo-500 p-4 rounded-lg shadow-sm">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-lightbulb text-indigo-500 text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h3 class="text-md font-medium text-indigo-800">提示词编写技巧</h3>
+                                        <div class="mt-2 text-sm text-indigo-700">
+                                            <ul class="list-disc pl-5 space-y-1">
+                                                <li>使用明确的指令和清晰的格式，避免模糊的表述</li>
+                                                <li>指定AI应该扮演的角色或采用的语气，赋予AI明确的身份</li>
+                                                <li>使用方括号 [变量] 标注用户需要替换的部分</li>
+                                                <li>提供输出的格式和结构要求，使结果更加规范</li>
+                                                <li>添加示例可以帮助AI更好地理解你的意图</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 使用说明 -->
+                    <div id="step3" class="mb-8 form-section form-section-collapsed">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center cursor-pointer toggle-section" data-target="step3">
+                            <span class="flex items-center justify-center w-10 h-10 bg-gray-400 text-white rounded-full mr-3 shadow-md section-number">
+                                <span>3</span>
+                            </span>
+                            使用说明
+                            <span class="ml-2 text-sm font-normal text-gray-500">帮助他人理解如何使用你的提示词</span>
+                            <i class="fas fa-chevron-down ml-auto text-gray-400 section-icon"></i>
+                        </h2>
+                        
+                        <div class="space-y-3 pl-10 section-content hidden">
+                            <div class="transition-all duration-300 hover:shadow-md p-3 rounded-lg">
+                                <label for="usage_guide" class="block text-sm font-medium text-gray-700 mb-2">使用说明</label>
+                                <textarea id="usage_guide" name="usage_guide" rows="6" placeholder="解释如何使用这个提示词，可以包含示例..." 
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300"></textarea>
+                                <div class="mt-1 text-xs text-gray-500">详细的使用说明可以帮助其他用户更好地使用您的提示词</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 效果展示 -->
+                    <div id="step4" class="mb-8 form-section form-section-collapsed">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center cursor-pointer toggle-section" data-target="step4">
+                            <span class="flex items-center justify-center w-10 h-10 bg-gray-400 text-white rounded-full mr-3 shadow-md section-number">
+                                <span>4</span>
+                            </span>
+                            效果展示
+                            <span class="ml-2 text-sm font-normal text-gray-500">通过图片展示提示词的实际效果</span>
+                            <i class="fas fa-chevron-down ml-auto text-gray-400 section-icon"></i>
+                        </h2>
+                        
+                        <div class="space-y-3 pl-10 section-content hidden">
+                            <div class="transition-all duration-300 hover:shadow-md p-3 rounded-lg">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">添加效果图片（可选）</label>
+                                <div class="mt-1 flex justify-center px-6 pt-4 pb-5 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition-colors duration-300">
+                                    <div class="space-y-2 text-center">
+                                        <i class="fas fa-cloud-upload-alt text-indigo-400 text-3xl mb-2 transition-all duration-300 transform hover:scale-110"></i>
+                                        <div class="flex text-sm text-gray-600 justify-center">
+                                            <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 transition-all duration-300">
+                                                <span>上传文件</span>
+                                                <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple>
+                                            </label>
+                                            <p class="pl-1">或拖拽文件到此处</p>
+                                        </div>
+                                        <p class="text-xs text-gray-500">
+                                            PNG, JPG, GIF 最大 5MB，最多4张图片
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="mt-3 grid grid-cols-4 gap-3" id="imagePreview"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 发布设置 -->
+                    <div id="step5" class="mb-8 form-section form-section-collapsed">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center cursor-pointer toggle-section" data-target="step5">
+                            <span class="flex items-center justify-center w-10 h-10 bg-gray-400 text-white rounded-full mr-3 shadow-md section-number">
+                                <span>5</span>
+                            </span>
+                            发布设置
+                            <span class="ml-2 text-sm font-normal text-gray-500">设置提示词的可见性</span>
+                            <i class="fas fa-chevron-down ml-auto text-gray-400 section-icon"></i>
+                        </h2>
+                        
+                        <div class="space-y-3 pl-10 section-content hidden">
+                            <div class="transition-all duration-300 hover:shadow-md p-3 rounded-lg">
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-6 mt-1">
+                                        <input id="is_public" name="is_public" type="checkbox" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded transition-all duration-300" checked>
+                                    </div>
+                                    <div class="ml-3">
+                                        <label for="is_public" class="font-medium text-gray-700">公开分享</label>
+                                        <p class="text-gray-500 text-sm">允许其他用户查看和使用此提示词</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提交按钮 -->
+                    <div class="flex justify-between border-t border-gray-200 pt-6 mt-8">
+                        <div class="flex space-x-2">
+                            <button type="button" id="prevStepBtn" class="px-6 py-3 border border-gray-300 bg-white rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 flex items-center">
+                                <i class="fas fa-arrow-left mr-2"></i> 上一步
+                            </button>
+                            <button type="button" id="nextStepBtn" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 flex items-center">
+                                下一步 <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex space-x-4">
+                            <button type="submit" id="submitBtn" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 flex items-center shine-effect">
+                                <i class="fas fa-paper-plane mr-2"></i> 发布提示词
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-robot text-indigo-400 text-2xl"></i>
+                        <span class="font-bold text-xl">Prompt星球</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">探索、收藏和分享AI提示词的最佳平台</p>
+                </div>
+                <div>
+                    <h4 class="font-medium text-lg mb-4">快速链接</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="home.html" class="hover:text-indigo-400 transition-colors duration-300">首页</a></li>
+                        <li><a href="browse.html" class="hover:text-indigo-400 transition-colors duration-300">浏览提示词</a></li>
+                        <li><a href="create-prompt.html" class="hover:text-indigo-400 transition-colors duration-300">创建提示词</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors duration-300">帮助中心</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium text-lg mb-4">关于我们</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors duration-300">关于Prompt星球</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors duration-300">联系我们</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors duration-300">使用条款</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors duration-300">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium text-lg mb-4">关注我们</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors duration-300">
+                            <i class="fab fa-weixin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors duration-300">
+                            <i class="fab fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors duration-300">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors duration-300">
+                            <i class="fab fa-zhihu text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-sm">
+                <p>© 2023 Prompt星球 - 提示词收录与管理平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript脚本 -->
+    <script>
+        // 初始化活动步骤
+        let currentStep = 1;
+        
+        // DOM加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化各种UI操作
+            initToggleSections();
+            initStepNavigation();
+            initMarkdownEditor();
+            
+            // 禁用"上一步"按钮，因为初始在第一步
+            document.getElementById('prevStepBtn').disabled = true;
+            document.getElementById('prevStepBtn').classList.add('opacity-50', 'cursor-not-allowed');
+        });
+        
+        // 初始化区域切换功能
+        function initToggleSections() {
+            const toggleButtons = document.querySelectorAll('.toggle-section');
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const section = document.getElementById(targetId);
+                    const content = section.querySelector('.section-content');
+                    const icon = this.querySelector('.section-icon');
+                    
+                    if (section.classList.contains('form-section-collapsed')) {
+                        // 展开
+                        section.classList.remove('form-section-collapsed');
+                        section.classList.add('form-section-expanded');
+                        content.classList.remove('hidden');
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                        
+                        // 激活圆点
+                        const numberCircle = section.querySelector('.section-number');
+                        if (numberCircle) {
+                            numberCircle.classList.remove('bg-gray-400');
+                            numberCircle.classList.add('bg-indigo-600');
+                        }
+                    } else {
+                        // 折叠
+                        section.classList.remove('form-section-expanded');
+                        section.classList.add('form-section-collapsed');
+                        content.classList.add('hidden');
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                        
+                        // 恢复灰色圆点
+                        const numberCircle = section.querySelector('.section-number');
+                        if (numberCircle) {
+                            numberCircle.classList.remove('bg-indigo-600');
+                            numberCircle.classList.add('bg-gray-400');
+                        }
+                    }
+                });
+            });
+            
+            // 展开全部和折叠全部按钮
+            document.getElementById('expandAllBtn').addEventListener('click', function() {
+                expandCollapseAll(true);
+            });
+            
+            document.getElementById('collapseAllBtn').addEventListener('click', function() {
+                expandCollapseAll(false);
+            });
+        }
+        
+        // 展开或折叠所有区域
+        function expandCollapseAll(expand) {
+            const sections = document.querySelectorAll('.form-section');
+            sections.forEach(section => {
+                const content = section.querySelector('.section-content');
+                const icon = section.querySelector('.section-icon');
+                const numberCircle = section.querySelector('.section-number');
+                
+                if (expand) {
+                    // 展开
+                    section.classList.remove('form-section-collapsed');
+                    section.classList.add('form-section-expanded');
+                    content.classList.remove('hidden');
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                    
+                    if (numberCircle) {
+                        numberCircle.classList.remove('bg-gray-400');
+                        numberCircle.classList.add('bg-indigo-600');
+                    }
+                } else {
+                    // 如果是第一步，保持展开状态
+                    if (section.id === 'step1') {
+                        return;
+                    }
+                    
+                    // 折叠
+                    section.classList.remove('form-section-expanded');
+                    section.classList.add('form-section-collapsed');
+                    content.classList.add('hidden');
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                    
+                    if (numberCircle) {
+                        numberCircle.classList.remove('bg-indigo-600');
+                        numberCircle.classList.add('bg-gray-400');
+                    }
+                }
+            });
+        }
+        
+        // 初始化步骤导航
+        function initStepNavigation() {
+            const stepButtons = document.querySelectorAll('.step-btn');
+            const prevStepBtn = document.getElementById('prevStepBtn');
+            const nextStepBtn = document.getElementById('nextStepBtn');
+            
+            // 步骤导航按钮点击事件
+            stepButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const step = parseInt(this.getAttribute('data-step'));
+                    navigateToStep(step);
+                });
+            });
+            
+            // 下一步按钮点击事件
+            nextStepBtn.addEventListener('click', function() {
+                if (currentStep < 5) {
+                    navigateToStep(currentStep + 1);
+                }
+            });
+            
+            // 上一步按钮点击事件
+            prevStepBtn.addEventListener('click', function() {
+                if (currentStep > 1) {
+                    navigateToStep(currentStep - 1);
+                }
+            });
+        }
+        
+        // 导航到特定步骤
+        function navigateToStep(step) {
+            // 折叠所有步骤
+            const sections = document.querySelectorAll('.form-section');
+            sections.forEach(section => {
+                const sectionStep = parseInt(section.id.replace('step', ''));
+                const content = section.querySelector('.section-content');
+                const icon = section.querySelector('.section-icon');
+                const numberCircle = section.querySelector('.section-number');
+                
+                section.classList.remove('form-section-expanded');
+                section.classList.add('form-section-collapsed');
+                content.classList.add('hidden');
+                
+                if (icon) {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+                
+                if (numberCircle) {
+                    numberCircle.classList.remove('bg-indigo-600');
+                    numberCircle.classList.add('bg-gray-400');
+                }
+            });
+            
+            // 展开目标步骤
+            const targetSection = document.getElementById(`step${step}`);
+            const targetContent = targetSection.querySelector('.section-content');
+            const targetIcon = targetSection.querySelector('.section-icon');
+            const targetCircle = targetSection.querySelector('.section-number');
+            
+            targetSection.classList.remove('form-section-collapsed');
+            targetSection.classList.add('form-section-expanded');
+            targetContent.classList.remove('hidden');
+            
+            if (targetIcon) {
+                targetIcon.classList.remove('fa-chevron-down');
+                targetIcon.classList.add('fa-chevron-up');
+            }
+            
+            if (targetCircle) {
+                targetCircle.classList.remove('bg-gray-400');
+                targetCircle.classList.add('bg-indigo-600');
+            }
+            
+            // 更新导航按钮状态
+            const stepButtons = document.querySelectorAll('.step-btn');
+            stepButtons.forEach(button => {
+                const buttonStep = parseInt(button.getAttribute('data-step'));
+                if (buttonStep === step) {
+                    button.classList.remove('bg-gray-100', 'text-gray-700');
+                    button.classList.add('bg-indigo-100', 'text-indigo-700', 'active');
+                } else {
+                    button.classList.remove('bg-indigo-100', 'text-indigo-700', 'active');
+                    button.classList.add('bg-gray-100', 'text-gray-700');
+                }
+            });
+            
+            // 更新前后导航按钮状态
+            const prevStepBtn = document.getElementById('prevStepBtn');
+            const nextStepBtn = document.getElementById('nextStepBtn');
+            
+            if (step === 1) {
+                prevStepBtn.disabled = true;
+                prevStepBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                prevStepBtn.disabled = false;
+                prevStepBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            
+            if (step === 5) {
+                nextStepBtn.disabled = true;
+                nextStepBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                nextStepBtn.disabled = false;
+                nextStepBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            
+            // 更新当前步骤
+            currentStep = step;
+            
+            // 滚动到顶部
+            window.scrollTo({
+                top: targetSection.offsetTop - 100,
+                behavior: 'smooth'
+            });
+        }
+        
+        // 初始化Markdown编辑器
+        function initMarkdownEditor() {
+            const editor = document.getElementById('prompt_content');
+            const toolbar = document.querySelectorAll('.markdown-editor .toolbar button');
+            
+            // 工具栏命令
+            toolbar.forEach(button => {
+                button.addEventListener('click', function() {
+                    const command = this.getAttribute('data-command');
+                    executeCommand(command);
+                });
+            });
+            
+            // 执行Markdown命令
+            function executeCommand(command) {
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const text = editor.value;
+                const selection = text.substring(start, end);
+                
+                let replacement = '';
+                let cursorOffset = 0;
+                
+                switch (command) {
+                    case 'bold':
+                        replacement = `**${selection}**`;
+                        cursorOffset = selection ? 0 : -2;
+                        break;
+                    case 'italic':
+                        replacement = `*${selection}*`;
+                        cursorOffset = selection ? 0 : -1;
+                        break;
+                    case 'heading':
+                        replacement = `# ${selection}`;
+                        cursorOffset = selection ? 0 : 0;
+                        break;
+                    case 'list-ul':
+                        replacement = selection.split('\n').map(line => `* ${line}`).join('\n');
+                        cursorOffset = 0;
+                        break;
+                    case 'list-ol':
+                        replacement = selection.split('\n').map((line, i) => `${i+1}. ${line}`).join('\n');
+                        cursorOffset = 0;
+                        break;
+                    case 'link':
+                        replacement = selection ? `[${selection}](网址)` : '[链接文字](网址)';
+                        cursorOffset = selection ? -1 : -7;
+                        break;
+                    case 'code':
+                        if (selection.includes('\n')) {
+                            replacement = `\`\`\`\n${selection}\n\`\`\``;
+                        } else {
+                            replacement = `\`${selection}\``;
+                            cursorOffset = selection ? 0 : -1;
+                        }
+                        break;
+                    case 'quote':
+                        replacement = selection.split('\n').map(line => `> ${line}`).join('\n');
+                        cursorOffset = 0;
+                        break;
+                    case 'image':
+                        replacement = '![图片描述](图片URL)';
+                        cursorOffset = -11;
+                        break;
+                    case 'help':
+                        showMarkdownHelp();
+                        return;
+                }
+                
+                // 插入文本
+                editor.value = text.substring(0, start) + replacement + text.substring(end);
+                
+                // 设置光标位置
+                if (selection) {
+                    editor.setSelectionRange(start, start + replacement.length);
+                } else {
+                    editor.setSelectionRange(start + replacement.length + cursorOffset, start + replacement.length + cursorOffset);
+                }
+                
+                // 获取焦点
+                editor.focus();
+            }
+            
+            // 显示Markdown帮助
+            function showMarkdownHelp() {
+                alert(`Markdown语法帮助：
+
+# 一级标题
+## 二级标题
+### 三级标题
+
+**粗体文本**
+*斜体文本*
+
+* 无序列表项
+* 无序列表项
+
+1. 有序列表项
+2. 有序列表项
+
+[链接文字](https://example.com)
+![图片描述](图片URL)
+
+\`行内代码\`
+
+\`\`\`
+代码块
+function example() {
+  return true;
+}
+\`\`\`
+
+> 这是引用的文本`);
+            }
+        }
+        
+        // 语言切换功能
+        document.getElementById('languageToggle').addEventListener('click', function(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('languageMenu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // 用户下拉菜单
+        document.getElementById('userDropdown').addEventListener('click', function(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', function(event) {
+            const languageToggle = document.getElementById('languageToggle');
+            const languageMenu = document.getElementById('languageMenu');
+            const userDropdown = document.getElementById('userDropdown');
+            const userMenu = document.getElementById('userMenu');
+            
+            if (languageToggle && languageMenu) {
+                if (!languageToggle.contains(event.target) && !languageMenu.contains(event.target)) {
+                    languageMenu.classList.add('hidden');
+                }
+            }
+            
+            if (userDropdown && userMenu) {
+                if (!userDropdown.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.add('hidden');
+                }
+            }
+        });
+        
+        // 深色模式切换功能
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const htmlEl = document.documentElement;
+        
+        // 检查本地存储中的深色模式设置
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            htmlEl.classList.add('dark');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        darkModeToggle.addEventListener('click', function() {
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                localStorage.setItem('darkMode', 'disabled');
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                htmlEl.classList.add('dark');
+                localStorage.setItem('darkMode', 'enabled');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        });
+        
+        // 检查系统偏好设置
+        const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+        if (prefersDarkMode.matches && localStorage.getItem('darkMode') === null) {
+            htmlEl.classList.add('dark');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        // 监听系统偏好设置变化
+        prefersDarkMode.addEventListener('change', function(e) {
+            if (localStorage.getItem('darkMode') === null) {
+                if (e.matches) {
+                    htmlEl.classList.add('dark');
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    htmlEl.classList.remove('dark');
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            }
+        });
+        
+        // 图片预览功能
+        document.getElementById('file-upload').addEventListener('change', function(event) {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                for(let i = 0; i < Math.min(files.length, 4); i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'relative rounded-lg overflow-hidden shadow-sm border border-gray-200 group';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="预览图" class="w-full h-24 object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                                <button type="button" class="text-white bg-red-500 hover:bg-red-600 p-1 rounded-full" onclick="this.parentElement.parentElement.remove()">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        preview.appendChild(div);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+        
+        // 表单验证和提交
+        document.getElementById('promptForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // 获取必填字段
+            const title = document.getElementById('title').value.trim();
+            const category = document.getElementById('category').value.trim();
+            const promptContent = document.getElementById('prompt_content').value.trim();
+            
+            // 简单验证
+            if (!title) {
+                alert('请输入提示词标题');
+                navigateToStep(1);
+                document.getElementById('title').focus();
+                return;
+            }
+            
+            if (!category) {
+                alert('请选择提示词分类');
+                navigateToStep(1);
+                document.getElementById('category').focus();
+                return;
+            }
+            
+            if (!promptContent) {
+                alert('请输入提示词内容');
+                navigateToStep(2);
+                document.getElementById('prompt_content').focus();
+                return;
+            }
+            
+            // TODO: 在此处添加表单提交逻辑
+            alert('提示词创建成功！');
+            
+            // 模拟提交后的跳转
+            // window.location.href = 'prompt-detail.html';
+        });
+    </script>
+</body>
+</html> 

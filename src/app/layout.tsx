@@ -7,6 +7,7 @@ import { generateMetadata } from "@/utils/metadata";
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { Analytics } from "@vercel/analytics/react"
+import Script from "next/script";
 
 export const metadata = generateMetadata('appName', 'homePage.description');
 
@@ -49,6 +50,12 @@ export default function RootLayout({
           </LanguageProvider>
         </AuthProvider>
         <Analytics />
+        <Script 
+          strategy="afterInteractive"
+          defer 
+          src="https://cloud.umami.is/script.js" 
+          data-website-id="66624d1b-4f2d-47b4-a4e5-189474f6ea1e" 
+        />
       </body>
     </html>
   );

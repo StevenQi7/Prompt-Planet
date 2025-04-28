@@ -165,7 +165,31 @@ export default function PromptsAndTags() {
   return (
     <section className="container mx-auto px-4 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* 提示词部分 */}
+        {/* 标签云和相关内容 - 现在放到左侧 */}
+        <div className="space-y-6">
+          {/* 热门标签 */}
+          <TagList
+            tags={popularTags}
+            title={t('browse.tags')}
+            isLoading={isLoading}
+          />
+          
+          {/* 其他内容部分，如统计数据、广告等 */}
+          <div className="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl p-5 border border-indigo-200">
+            <h3 className="font-medium text-indigo-900 mb-2">{t('homePage.createYourPrompt')}</h3>
+            <p className="text-indigo-800 text-sm mb-4">
+              {t('homePage.shareCreativity')}
+            </p>
+            <a 
+              href="/create-prompt" 
+              className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+              <i className="fas fa-plus-circle mr-1.5"></i> {t('homePage.createBtnText')}
+            </a>
+          </div>
+        </div>
+        
+        {/* 提示词部分 - 现在放到右侧 */}
         <div className="lg:col-span-3">
           {/* 特色提示词标题 */}
           <div className="flex justify-between items-center mb-6">
@@ -245,30 +269,6 @@ export default function PromptsAndTags() {
             hasMore={hasMore}
             onLoadMore={handleLoadMore}
           />
-        </div>
-        
-        {/* 标签云和相关内容 */}
-        <div className="space-y-6">
-          {/* 热门标签 */}
-          <TagList
-            tags={popularTags}
-            title={t('browse.tags')}
-            isLoading={isLoading}
-          />
-          
-          {/* 其他内容部分，如统计数据、广告等 */}
-          <div className="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl p-5 border border-indigo-200">
-            <h3 className="font-medium text-indigo-900 mb-2">{t('homePage.createYourPrompt')}</h3>
-            <p className="text-indigo-800 text-sm mb-4">
-              {t('homePage.shareCreativity')}
-            </p>
-            <a 
-              href="/create-prompt" 
-              className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
-            >
-              <i className="fas fa-plus-circle mr-1.5"></i> {t('homePage.createBtnText')}
-            </a>
-          </div>
         </div>
       </div>
     </section>

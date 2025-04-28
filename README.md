@@ -97,6 +97,12 @@ Prompt Planet is a revolutionary project that showcases the power of AI in softw
   - Social media preview cards
   - Multi-language SEO support
 
+## 🌓 Dark Mode Support
+
+- **Automatic dark mode**: The site automatically follows the user's system preference (light/dark) using `prefers-color-scheme`.
+- **Manual toggle**: Users can manually switch between light and dark mode via the navigation bar button. The choice is remembered in localStorage and takes precedence over system settings.
+- **Seamless experience**: If the user has not manually selected a mode, the site will always follow the system's color scheme, and will update in real time if the system preference changes.
+
 ## 🛠️ Technology Stack
 
 - **Frontend**

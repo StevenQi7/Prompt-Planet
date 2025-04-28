@@ -30,7 +30,21 @@ const SEARCH_CACHE_TTL = 60; // 1分钟
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const query = searchParams.get('q');
+    const rawQuery = searchParams.get('q');
+    
+    // 对查询进行处理，去除特殊字符或进行编码
+    let query = null;
+    try {
+      // 安全解码URL参数
+      if (rawQuery) {
+        query = decodeURIComponent(rawQuery.trim());
+      }
+    } catch (decodeError) {
+      console.error('解码查询参数失败:', decodeError);
+      // 如果解码失败，使用原始值
+      query = rawQuery ? rawQuery.trim() : null;
+    }
+
     const categoryId = searchParams.get('category');
     const tagId = searchParams.get('tag');
     const lang = searchParams.get('lang') || searchParams.get('language');
@@ -61,14 +75,21 @@ export async function GET(req: NextRequest) {
     const page = pageStr ? parseInt(pageStr) : 1;
     const limit = limitStr ? parseInt(limitStr) : 9;
 
-    // 生成缓存键
-    const cacheKey = featured 
-      ? `${FEATURED_CACHE_PREFIX}${lang || 'all'}-${page}-${limit}`
+    // 生成缓存键 - 使用Base64编码避免特殊字符和中文问题
+    const cacheKeyParams = featured 
+      ? `${lang || 'all'}-${page}-${limit}`
       : latest
-        ? `${LATEST_CACHE_PREFIX}${lang || 'all'}-${page}-${limit}`
-        : `${SEARCH_CACHE_PREFIX}${query || ''}-${categoryId || ''}-${uniqueTagIds.join('_') || ''}-${lang || ''}-${sortBy || ''}-${page}-${limit}-${status || ''}-${exclude || ''}`;
+        ? `${lang || 'all'}-${page}-${limit}`
+        : `${query || ''}-${categoryId || ''}-${uniqueTagIds.join('_') || ''}-${lang || ''}-${sortBy || ''}-${page}-${limit}-${status || ''}-${exclude || ''}`;
 
-    // 生成 ETag
+    // 创建一个安全的缓存键    
+    const cacheKey = featured 
+      ? `${FEATURED_CACHE_PREFIX}${Buffer.from(cacheKeyParams).toString('base64')}`
+      : latest
+        ? `${LATEST_CACHE_PREFIX}${Buffer.from(cacheKeyParams).toString('base64')}`
+        : `${SEARCH_CACHE_PREFIX}${Buffer.from(cacheKeyParams).toString('base64')}`;
+
+    // 生成 ETag - 使用Base64编码的缓存键
     const etag = `"${cacheKey}-${Math.floor(Date.now() / 30000)}"`; // 每30秒更新一次
 
     // 检查客户端缓存
@@ -83,14 +104,24 @@ export async function GET(req: NextRequest) {
     // 尝试从 Redis 获取缓存
     const cachedResult = await redis.get(cacheKey);
     if (cachedResult) {
-      return NextResponse.json(cachedResult, {
-        headers: {
-          ...cacheHeaders,
-          'ETag': etag,
-          'Last-Modified': new Date().toUTCString(),
-          'X-Cache': 'HIT'
-        }
-      });
+      try {
+        // 如果缓存的是字符串，尝试解析它
+        const parsedResult = typeof cachedResult === 'string' 
+          ? JSON.parse(cachedResult) 
+          : cachedResult;
+          
+        return NextResponse.json(parsedResult, {
+          headers: {
+            ...cacheHeaders,
+            'ETag': etag,
+            'Last-Modified': new Date().toUTCString(),
+            'X-Cache': 'HIT'
+          }
+        });
+      } catch (parseError) {
+        console.error('解析缓存数据失败:', parseError);
+        // 继续执行，放弃使用缓存
+      }
     }
 
     let result;
@@ -127,9 +158,16 @@ export async function GET(req: NextRequest) {
     const transformedResult = transformPromptResponse(result);
 
     // 存储到 Redis 缓存
-    await redis.set(cacheKey, transformedResult, {
-      ex: cacheTTL
-    });
+    try {
+      // 明确序列化数据以确保Unicode字符被正确处理
+      const serializedResult = JSON.stringify(transformedResult);
+      await redis.set(cacheKey, serializedResult, {
+        ex: cacheTTL
+      });
+    } catch (cacheError) {
+      console.error('Redis缓存存储失败:', cacheError);
+      // 缓存失败不影响API正常响应
+    }
     
     return NextResponse.json(transformedResult, {
       headers: {
@@ -140,6 +178,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error) {
+    console.error('GET /api/prompts 发生错误:', error);
     return NextResponse.json({ error: '获取提示词失败' }, { status: 500 });
   }
 }
@@ -192,7 +231,7 @@ export async function POST(req: NextRequest) {
       message: '提示词创建成功，正在等待审核' 
     }, { status: 201 });
   } catch (error) {
-    
+    console.error('POST /api/prompts 发生错误:', error);
     return NextResponse.json({ error: '创建提示词失败' }, { status: 500 });
   }
 } 

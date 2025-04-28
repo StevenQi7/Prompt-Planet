@@ -44,7 +44,7 @@ export default function HeroSection() {
         </div>
       </div>
       {/* 底部渐变过渡 */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent hero-bottom-gradient"></div>
     </section>
   );
 } 

@@ -463,8 +463,11 @@ export async function searchPrompts(params: {
       case 'relevance':
       default:
         if (params.query) {
-          // 如果有搜索词，按相关性排序（匹配度）
-          query = query.or(`title.ilike.%${params.query}%,description.ilike.%${params.query}%`)
+          // 如果有搜索词，正确实现多列LIKE查询
+          const searchPattern = `%${params.query}%`;
+          
+          // 使用Supabase的标准模式构建OR查询
+          query = query.or(`title.ilike.${searchPattern},description.ilike.${searchPattern}`)
             .order('view_count', { ascending: false }); // 次要排序依据：浏览量
         } else {
           // 没有搜索词时，默认按创建时间排序
@@ -584,6 +587,13 @@ export async function searchPrompts(params: {
       totalPages
     };
   } catch (error) {
+    console.error('searchPrompts 执行失败:', error);
+    if (error instanceof Error) {
+      console.error('错误详情:', error.message);
+      if (error.stack) {
+        console.error('堆栈跟踪:', error.stack);
+      }
+    }
     throw error;
   }
 }

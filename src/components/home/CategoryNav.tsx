@@ -29,13 +29,15 @@ const TopCategoryItem = ({ category }: { category: Category }) => {
   return (
     <Link 
       href={`/browse?category=${category.id}`}
-      className={`group flex items-center p-3 rounded-lg transition-all duration-300 ${colorClasses.hover} ${colorClasses.border} border`}
+      className={`group flex flex-col items-center p-4 rounded-xl transition-all duration-300 border ${colorClasses.hover} ${colorClasses.border} 
+        hover:shadow-md bg-white hover:-translate-y-1 h-full`}
     >
-      <span className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${colorClasses.bg}`}>
-        <i className={`${iconName} ${colorClasses.iconColor} transition-colors ${colorClasses.iconHover}`}></i>
+      <span className={`w-14 h-14 rounded-xl flex items-center justify-center mb-3 ${colorClasses.bg} 
+        group-hover:scale-110 transition-transform duration-300`}>
+        <i className={`${iconName} ${colorClasses.iconColor} text-xl transition-colors ${colorClasses.iconHover}`}></i>
       </span>
-      <div>
-        <h3 className={`font-medium ${colorClasses.text}`}>{displayText}</h3>
+      <div className="text-center">
+        <h3 className={`font-medium ${colorClasses.text} text-base mb-1`}>{displayText}</h3>
         <p className="text-gray-500 text-sm">{t('categoryNav.promptCount', { count: category.count })}</p>
       </div>
     </Link>
@@ -86,15 +88,17 @@ export default function CategoryNav() {
       <Link 
         key={category.id}
         href={`/browse?category=${category.id}`}
-        className="flex items-center p-2 hover:bg-gray-50 rounded-md transition-colors"
+        className="flex items-center p-2.5 hover:bg-gray-50 rounded-lg transition-colors"
       >
-        <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-2 ${colorClasses.bg}`}>
+        <span className={`w-9 h-9 rounded-lg flex items-center justify-center mr-3 ${colorClasses.bg}`}>
           <i className={`${iconName} ${colorClasses.iconColor} text-sm`}></i>
         </span>
         <div className="flex-grow">
-          <span className="text-gray-800">{displayText}</span>
+          <span className="text-gray-800 font-medium">{displayText}</span>
         </div>
-        <span className="text-gray-400 text-sm">{category.count}</span>
+        <span className={`text-sm ${colorClasses.text} font-medium bg-gray-50 py-1 px-2 rounded-full`}>
+          {category.count}
+        </span>
       </Link>
     );
   };
@@ -106,15 +110,13 @@ export default function CategoryNav() {
           <div className="animate-pulse h-8 w-48 bg-gray-200 rounded"></div>
           <div className="animate-pulse h-8 w-32 bg-gray-200 rounded"></div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(8)].map((_, index) => (
-            <div key={index} className="animate-pulse p-4 border border-gray-200 rounded-lg">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
-                <div>
-                  <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-16"></div>
-                </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {[...Array(12)].map((_, index) => (
+            <div key={index} className="animate-pulse p-4 border border-gray-200 rounded-xl bg-white">
+              <div className="flex flex-col items-center">
+                <div className="w-14 h-14 bg-gray-200 rounded-xl mb-3"></div>
+                <div className="h-5 bg-gray-200 rounded w-24 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-16"></div>
               </div>
             </div>
           ))}
@@ -125,21 +127,21 @@ export default function CategoryNav() {
 
   return (
     <section className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+      <div className="flex flex-wrap justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center mb-3 md:mb-0">
           {/* 使用第一个分类的颜色，如果没有分类则使用默认indigo颜色 */}
           {topCategories.length > 0 ? (
             (() => {
               const colorClasses = getColorClasses(topCategories[0].color || 'indigo');
               return (
-                <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-2 ${colorClasses.border}`}>
-                  <i className={`fas fa-th-large ${colorClasses.iconColor} text-sm`}></i>
+                <span className={`w-10 h-10 rounded-xl flex items-center justify-center mr-3 ${colorClasses.bg}`}>
+                  <i className={`fas fa-th-large ${colorClasses.iconColor} text-lg`}></i>
                 </span>
               );
             })()
           ) : (
-            <span className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-2">
-              <i className="fas fa-th-large text-indigo-600 text-sm"></i>
+            <span className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center mr-3">
+              <i className="fas fa-th-large text-indigo-600 text-lg"></i>
             </span>
           )}
           {t('categoryNav.title')}
@@ -147,24 +149,26 @@ export default function CategoryNav() {
         <div className="relative">
           <button 
             onClick={() => setCategoryMenuOpen(!categoryMenuOpen)}
-            className={`font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center ${
+            className={`font-medium py-2.5 px-5 rounded-lg transition-all duration-300 flex items-center shadow-sm ${
               topCategories.length > 0 ? (() => {
                 const colorClasses = getColorClasses(topCategories[0].color || 'indigo');
                 return `${colorClasses.hover.replace('hover:', '')} ${colorClasses.text} ${colorClasses.border}`;
               })() : "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100"
             }`}
           >
-            {t('categoryNav.allCategories')} <i className="fas fa-chevron-down ml-2 text-xs"></i>
+            {t('categoryNav.allCategories')} <i className={`fas fa-chevron-${categoryMenuOpen ? 'up' : 'down'} ml-2 text-xs transition-transform duration-300`}></i>
           </button>
           {categoryMenuOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl z-10 py-2 border border-gray-100 overflow-hidden">
-              {categories.map(renderCategoryMenuItem)}
+            <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl z-10 py-3 border border-gray-100 overflow-hidden max-h-[60vh] overflow-y-auto">
+              <div className="space-y-1 px-2">
+                {categories.map(renderCategoryMenuItem)}
+              </div>
             </div>
           )}
         </div>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {topCategories.map(category => (
           <TopCategoryItem key={category.id} category={category} />
         ))}

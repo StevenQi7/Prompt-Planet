@@ -252,39 +252,26 @@ export default function BrowseFilter({
               {filteredTags.map(tag => {
                 const isSelected = selectedTags.includes(tag.id);
                 const displayName = language === 'zh' ? (tag.displayName || tag.display_name || tag.name) : tag.name;
-                
                 // 获取颜色
                 const tagColor = getTagColor(tag.color);
-                
+                // 颜色类
+                const colorClass = tag.color ? tag.color : 'indigo';
                 // 基础样式
                 const baseClass = 'px-2.5 py-1.5 text-xs rounded-full border transition-colors duration-200 flex items-center';
-                
-                // 选中状态样式加强
-                const selectedClass = isSelected ? 'font-medium shadow-sm' : 'hover:bg-gray-50';
-                
-                // 特殊处理颜色，使用内联样式
-                const tagStyle = {
-                  backgroundColor: isSelected ? tagColor.bg : 'white',
-                  borderColor: isSelected ? tagColor.border : '#e5e7eb',
-                };
-                
-                // 文字颜色单独设置
-                const textStyle = {
-                  color: isSelected ? tagColor.text : '#374151',
-                };
-                
+                // 选中和未选中状态样式
+                const selectedClass = isSelected
+                  ? `font-medium shadow-sm bg-${colorClass}-50 border-${colorClass}-100 text-${colorClass}-700 dark:bg-${colorClass}-900 dark:border-${colorClass}-700 dark:text-${colorClass}-100`
+                  : `bg-white border-gray-200 text-gray-700 hover:bg-gray-50 dark:bg-[#23272f] dark:border-[#3b4252] dark:text-white dark:hover:bg-[#2a2e39]`;
                 return (
                   <button
                     key={tag.id}
                     onClick={() => onTagChange(tag.id)}
                     className={`${baseClass} ${selectedClass}`}
-                    style={tagStyle}
                   >
                     <span 
-                      className="w-2.5 h-2.5 rounded-full mr-1.5 inline-block" 
-                      style={{ backgroundColor: tagColor.dot }}
+                      className={`w-2.5 h-2.5 rounded-full mr-1.5 inline-block bg-${colorClass}-400`}
                     ></span>
-                    <span style={textStyle}>{displayName}</span>
+                    <span>{displayName}</span>
                     {tag.count > 0 && (
                       <span className="ml-1 text-gray-500 text-xs">({tag.count})</span>
                     )}

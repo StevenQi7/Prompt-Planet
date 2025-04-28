@@ -19,6 +19,62 @@ export default function Navbar() {
   const { language, setLanguage, t } = useLanguage();
   const { user, logout, isAuthenticated, isAdmin, loading } = useAuth();
   
+  // 暗黑模式相关
+  const [isDark, setIsDark] = useState(false);
+  
+  // 初始化暗黑模式
+  useEffect(() => {
+    const htmlEl = document.documentElement;
+    // 检查本地存储
+    const localDark = localStorage.getItem('darkMode');
+    if (localDark === 'enabled') {
+      htmlEl.classList.add('dark');
+      setIsDark(true);
+    } else if (localDark === 'disabled') {
+      htmlEl.classList.remove('dark');
+      setIsDark(false);
+    } else {
+      // 跟随系统
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        htmlEl.classList.add('dark');
+        setIsDark(true);
+      } else {
+        htmlEl.classList.remove('dark');
+        setIsDark(false);
+      }
+    }
+    // 监听系统主题变化
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (localStorage.getItem('darkMode') === null) {
+        if (e.matches) {
+          htmlEl.classList.add('dark');
+          setIsDark(true);
+        } else {
+          htmlEl.classList.remove('dark');
+          setIsDark(false);
+        }
+      }
+    };
+    media.addEventListener('change', handleChange);
+    return () => media.removeEventListener('change', handleChange);
+  }, []);
+  
+  // 切换暗黑模式
+  const toggleDarkMode = () => {
+    const htmlEl = document.documentElement;
+    if (htmlEl.classList.contains('dark')) {
+      htmlEl.classList.remove('dark');
+      localStorage.setItem('darkMode', 'disabled');
+      setIsDark(false);
+    } else {
+      htmlEl.classList.add('dark');
+      localStorage.setItem('darkMode', 'enabled');
+      setIsDark(true);
+    }
+  };
+  
   // 切换语言
   const toggleLanguage = () => {
     setLanguage(language === 'zh' ? 'en' : 'zh');
@@ -137,6 +193,16 @@ export default function Navbar() {
               </>
             )}
             
+            {/* 暗黑模式切换按钮 */}
+            <button
+              onClick={toggleDarkMode}
+              className="text-gray-600 hover:text-indigo-600 transition-colors duration-300 flex items-center"
+              title={isDark ? '切换为浅色模式' : '切换为深色模式'}
+              aria-label="切换暗黑模式"
+            >
+              <i className={isDark ? 'fas fa-sun' : 'fas fa-moon'}></i>
+            </button>
+            
             {/* 语言切换按钮 */}
             <button
               onClick={toggleLanguage}
@@ -169,21 +235,21 @@ export default function Navbar() {
                 {userMenuOpen && (
                   <div 
                     ref={userMenuRef}
-                    className="absolute right-0 mt-2 bg-white rounded-lg shadow-xl z-10 py-2 w-40 border border-gray-100"
+                    className="absolute right-0 mt-2 bg-white dark:bg-gray-900 rounded-lg shadow-xl z-10 py-2 w-40 border border-gray-100 dark:border-gray-800"
                   >
-                    <Link href="/profile" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                    <Link href="/profile" className="user-menu-link block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-200 transition duration-200">
                       <i className="fas fa-user-circle mr-2"></i>{t('nav.profile')}
                     </Link>
                     {/* 管理员独有的审核管理选项 */}
                     {isAdmin && (
                       <Link 
                         href="/admin/review" 
-                        className={`block px-4 py-2 ${pathname === '/admin/review' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-600'} transition duration-200`}
+                        className={`user-menu-link block px-4 py-2 ${pathname === '/admin/review' ? 'text-indigo-600 bg-indigo-50 dark:bg-gray-800 dark:text-white' : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-200'} transition duration-200`}
                       >
                         <i className="fas fa-clipboard-check mr-2"></i>{t('nav.adminReview')}
                       </Link>
                     )}
-                    <Link href="/settings" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-200">
+                    <Link href="/settings" className="user-menu-link block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-200 transition duration-200">
                       <i className="fas fa-cog mr-2"></i>{t('nav.settings')}
                     </Link>
                     <hr className="my-1 border-gray-200" />

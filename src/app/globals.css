@@ -675,3 +675,7 @@ html.dark .user-menu-link:hover {
   background-color: #1f2937 !important;
   color: #fff !important;
 }
+
+html.dark .hero-bottom-gradient {
+  display: none !important;
+}

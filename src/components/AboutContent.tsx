@@ -17,7 +17,7 @@ export default function AboutContent() {
             <p className="text-xl text-gray-100 mb-6">{t('about.subtitle')}</p>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent hero-bottom-gradient"></div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
